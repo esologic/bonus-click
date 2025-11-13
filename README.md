@@ -1,20 +1,8 @@
-# Click Compose - click_compose 
+# Click Compose - `click_compose` 
 
-Convenience wrappers around helpful click patterns.
+![](./logo.jpeg)
 
-## Usage
-
-####  Environment variables
-
-
-
-#### Correct usage
-
-With the virtual env activated, run: 
-
-```
-python main.py --fill-me-in
-```
+Convenience wrappers around helpful [click](https://click.palletsprojects.com/en/stable/) patterns.
 
 ## Getting Started
 
@@ -39,17 +27,10 @@ There's also a bin script to do this, and will install poetry if you don't alrea
 ./tools/create_venv.sh
 ```
 
-#### Adding new dependencies
-
-
 ## Developer Guide
 
 The following is documentation for developers that would like to contribute
 to Click Compose.
-
-### Pycharm Note
-
-Make sure you mark `click_compose` and `./test` as source roots!
 
 ### Testing
 
