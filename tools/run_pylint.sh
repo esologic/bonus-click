@@ -12,4 +12,4 @@ source ./.venv/bin/activate
 
 export PYTHONPATH=".:./test${PYTHONPATH+:}${PYTHONPATH:-}"
 
-pylint main.py click_compose test
+pylint main.py bonus_click test

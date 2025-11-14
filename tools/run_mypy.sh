@@ -12,5 +12,5 @@ source ./.venv/bin/activate
 export PYTHONPATH=".:./test${PYTHONPATH+:}${PYTHONPATH:-}"
 
 mypy --show-error-codes main.py  # Run on loose files within this project
-mypy --show-error-codes -p click_compose -p test  # Run on sub-packages within this project
+mypy --show-error-codes -p bonus_click -p test  # Run on sub-packages within this project
 

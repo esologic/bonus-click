@@ -3,7 +3,7 @@
 
 def main() -> None:
     """
-    Main entry point for click_compose
+    Main entry point for bonus_click
     :return: None
     """
 

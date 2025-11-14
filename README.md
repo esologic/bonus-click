@@ -1,4 +1,4 @@
-# Click Compose - `click_compose` 
+# Bonus Click - `bonus_click` 
 
 ![](./logo.jpeg)
 
@@ -30,7 +30,7 @@ There's also a bin script to do this, and will install poetry if you don't alrea
 ## Developer Guide
 
 The following is documentation for developers that would like to contribute
-to Click Compose.
+to Bonus Click.
 
 ### Testing
 

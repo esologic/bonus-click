@@ -9,4 +9,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd ${DIR}/..
 source ./.venv/bin/activate
 
-black . main.py click_compose/ test/ --diff --check
+black . main.py bonus_click/ test/ --diff --check

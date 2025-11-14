@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Run all pytest unit tests in the ./click_compose:./test directory.
+# Run all pytest unit tests in the ./bonus_click:./test directory.
 # Will exit non-zero if any unit test fail unexpectedly.
 #
 # Pass in other pytest args, such as for very verbose test output:
