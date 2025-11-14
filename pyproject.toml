@@ -3,6 +3,7 @@ build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core"]
 
 [project.urls]
+"Name" = "Bonus Click"
 "Homepage" = "https://github.com/esologic/bonus-click"
 "Source Code" = "https://github.com/esologic/bonus-click"
 "Bug Tracker" = "https://github.com/esologic/bonus-click/issues"
