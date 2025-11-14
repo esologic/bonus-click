@@ -2,6 +2,11 @@
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core"]
 
+[project.urls]
+"Homepage" = "https://github.com/esologic/bonus-click"
+"Source Code" = "https://github.com/esologic/bonus-click"
+"Bug Tracker" = "https://github.com/esologic/bonus-click/issues"
+
 [tool.black]
 line-length = 100
 target-version = ['py310']
@@ -39,7 +44,7 @@ authors = ["Devon Bray"]
 description = "Convenience wrappers around helpful click patterns."
 name = "bonus_click"
 readme = "README.md"
-version = "0.0.1"
+version = "0.1.0"
 
 [tool.poetry.dependencies]
 python = "^3.10"

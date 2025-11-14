@@ -1,7 +1,13 @@
 # Changelog
 
+## Roadmap
 
-0.0.1 - (2025-11-13)
-------------------
+* Easy log config decorator.
+* Click types for `HH:MM:SS` timedelta strings.
 
-* Project begins
+## Versions
+
+### 0.1.0 - (2025-11-13)
+
+* Project created and published.
+* Implements `create_enum_option` for going from an `Enum` to a series of different click choices.

@@ -6,6 +6,18 @@ Convenience wrappers around helpful [click](https://click.palletsprojects.com/en
 
 ## Getting Started
 
+Install with `pip`:
+
+```
+pip install bonus-click
+```
+
+
+## Developer Guide
+
+The following is documentation for developers that would like to contribute
+to Bonus Click.
+
 ### Python Dependencies
 
 Poetry is required to manage Python dependencies. You can install it easily by following the
@@ -26,11 +38,6 @@ There's also a bin script to do this, and will install poetry if you don't alrea
 ```
 ./tools/create_venv.sh
 ```
-
-## Developer Guide
-
-The following is documentation for developers that would like to contribute
-to Bonus Click.
 
 ### Testing
 
