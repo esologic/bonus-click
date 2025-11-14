@@ -2,12 +2,6 @@
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core"]
 
-[project.urls]
-"Name" = "Bonus Click"
-"Homepage" = "https://github.com/esologic/bonus-click"
-"Source Code" = "https://github.com/esologic/bonus-click"
-"Bug Tracker" = "https://github.com/esologic/bonus-click/issues"
-
 [tool.black]
 line-length = 100
 target-version = ['py310']
@@ -72,3 +66,8 @@ addopts = "-rsxX --showlocals --strict-markers"
 devtest = "temporary development mark that can be used as needed (should not be merged to master)"
 integration = "tests that access outside services (s3, APIs), don't run in CircleCI"
 timeout = "timeout for test in seconds, from `pytest-timeout` module"
+
+[tool.poetry.urls]
+Homepage = "https://github.com/esologic/bonus-click"
+Source = "https://github.com/esologic/bonus-click"
+Tracker = "https://github.com/esologic/bonus-click/issues"
