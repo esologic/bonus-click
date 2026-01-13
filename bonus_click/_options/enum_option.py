@@ -3,7 +3,7 @@ Uses enums to define different choices the user can make in your CLI.
 """
 
 from enum import Enum
-from typing import Callable, Optional, TypeVar
+from typing import Callable, Optional, Tuple, TypeVar, Union, cast
 
 import click
 from click import Context, Parameter
@@ -54,7 +54,13 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
         f"\b\n{help_message}\nOptions below. Either provide index or value:\n{options_string}"
     )
 
-    def callback(_ctx: Context, _param: Parameter, value: str) -> "T | E":
+    def convert_single_value(value: str | int) -> "T | E":
+        """
+        Performs a single conversion from the input to the output enum.
+        :param value: Either the index or the string version of the enum.
+        :return: Input in it's enum form.
+        """
+
         enum_options = list(input_enum)
         try:
             # Try interpreting as an index
@@ -63,7 +69,7 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
                 return enum_options[index]
             else:
                 raise click.BadParameter(
-                    f"Index out of range. Valid range: 0-{len(enum_options)-1}."
+                    f"Index out of range. Valid range: 0-{len(enum_options) - 1}."
                 )
         except ValueError:
             # If not an index, validate as a string
@@ -74,8 +80,28 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
                 valid_choices = ", ".join([e.value for e in enum_options])
                 raise click.BadParameter(
                     "Invalid choice. "
-                    f"Valid names: {valid_choices}, or indices 0-{len(enum_options)-1}."
+                    f"Valid names: {valid_choices}, or indices 0-{len(enum_options) - 1}."
                 ) from e
+
+    def callback(
+        _ctx: Context,
+        _param: Parameter,
+        value: Union[str | int, Tuple[str | int, ...]],
+    ) -> Union["T | E", Tuple["T | E", ...]]:
+        """
+        Callback to decorate the input and create the function.
+        :param _ctx: Unused.
+        :param _param: Unused.
+        :param value: To convert.
+        :return: Converted value or values.
+        """
+
+        if multiple:
+            values = cast(Tuple[str | int, ...], value)
+            return tuple(convert_single_value(v) for v in values)
+        else:
+            single_value = cast(str | int, value)
+            return convert_single_value(single_value)
 
     return click.option(
         arg_flag,
