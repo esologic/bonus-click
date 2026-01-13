@@ -7,6 +7,11 @@
 
 ## Versions
 
+### 0.2.0 - (2026-01-12)
+
+* Allows `multiple` to be configured in the enum option.
+
+
 ### 0.1.0 - (2025-11-13)
 
 * Project created and published.

@@ -19,8 +19,9 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
     help_message: str,
     default: E,
     input_enum: type[E],
-    lookup_fn: Optional[Callable[[E], T]] = None,
+    multiple: bool = False,
     envvar: Optional[str] = None,
+    lookup_fn: Optional[Callable[[E], T]] = None,
 ) -> Callable[[FC], FC]:
     """
     Creates a Click option for an Enum type. Resulting input can be given as an index or as the
@@ -30,10 +31,13 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
     :param help_message: Will be included in the --help message alongside the acceptable inputs
     to the Enum.
     :param default: The default value for the Click option, must be a member of `input_enum`.
+
+    :param input_enum: The Enum class from which the option values are derived.
+    :param multiple: If given, the corresponding `multiple` flag will be set in the output option,
+    allowing the option to be given multiple times.
+    :param envvar: Passed to the click option.
     :param lookup_fn: If given, the resolved value will be passed to this function, then the click
     command will get whatever is returned as an argument.
-    :param input_enum: The Enum class from which the option values are derived.
-    :param envvar: Passed to the click option.
     :return: A Click option configured for the specified Enum.
     """
 
@@ -79,7 +83,8 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
         callback=callback,
         help=help_string,
         default=default.value,  # Ensure we use the string value for the default
-        show_default=True,
         envvar=envvar,
+        multiple=multiple,
+        show_default=True,
         show_envvar=True,
     )
