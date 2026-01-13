@@ -7,7 +7,7 @@
 
 ## Versions
 
-### 0.2.0 - (2026-01-12)
+### 0.2.1 - (2026-01-12)
 
 * Allows `multiple` to be configured in the enum option.
 
