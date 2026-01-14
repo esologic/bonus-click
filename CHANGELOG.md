@@ -7,6 +7,12 @@
 
 ## Versions
 
+### 0.3.0 - (2026-01-14)
+
+* Adds optional `None` defaults in `create_enum_option` and the corresponding similar logic for the
+multiple case.
+
+
 ### 0.2.1 - (2026-01-12)
 
 * Allows `multiple` to be configured in the enum option.

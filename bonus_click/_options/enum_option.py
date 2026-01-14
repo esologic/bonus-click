@@ -9,29 +9,38 @@ import click
 from click import Context, Parameter
 from click.decorators import FC
 
-# A generic type variable for Enum subclasses, essentially any enum subclass.
 E = TypeVar("E", bound=Enum)
 T = TypeVar("T")
+
+ClickDefault = Optional[Union[str, int, Tuple[Union[str, int], ...]]]
 
 
 def create_enum_option(  # pylint: disable=too-many-positional-arguments
     arg_flag: str,
     help_message: str,
-    default: E,
     input_enum: type[E],
+    default: Optional[E] = None,
     multiple: bool = False,
     envvar: Optional[str] = None,
     lookup_fn: Optional[Callable[[E], T]] = None,
 ) -> Callable[[FC], FC]:
     """
-    Creates a Click option for an Enum type. Resulting input can be given as an index or as the
-    string value from the enum.
+    Creates a Click option for an Enum type. Inputs may be given as either the
+    enum's value or its index.
+
+    If ``multiple`` is False:
+        - Option omitted  -> None
+        - Option provided -> E or T
+
+    If ``multiple`` is True:
+        - Option omitted  -> ()
+        - Option provided -> tuple[E | T, ...]
 
     :param arg_flag: The argument flag for the Click option (e.g., "--output").
     :param help_message: Will be included in the --help message alongside the acceptable inputs
     to the Enum.
-    :param default: The default value for the Click option, must be a member of `input_enum`.
-
+    :param default: The default value for the Click option, must be a member of `input_enum` or
+    `None`.
     :param input_enum: The Enum class from which the option values are derived.
     :param multiple: If given, the corresponding `multiple` flag will be set in the output option,
     allowing the option to be given multiple times.
@@ -41,13 +50,16 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
     :return: A Click option configured for the specified Enum.
     """
 
-    try:
-        input_enum(default)
-    except ValueError as e:
-        raise ValueError("Default value was not a member of the enum!") from e
+    if default is not None:
+        try:
+            input_enum(default)
+        except ValueError as exc:
+            raise ValueError("Default value was not a member of the enum") from exc
+
+    enum_options = list(input_enum)
 
     options_string = "\n".join(
-        [f"   {idx}: {enum_member.value}" for idx, enum_member in enumerate(input_enum)]
+        f"   {idx}: {member.value}" for idx, member in enumerate(enum_options)
     )
 
     help_string = (
@@ -60,22 +72,17 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
         :param value: Either the index or the string version of the enum.
         :return: Input in it's enum form.
         """
-
-        enum_options = list(input_enum)
         try:
-            # Try interpreting as an index
             index = int(value)
             if 0 <= index < len(enum_options):
-                return enum_options[index]
+                resolved: E = enum_options[index]
             else:
                 raise click.BadParameter(
                     f"Index out of range. Valid range: 0-{len(enum_options) - 1}."
                 )
         except ValueError:
-            # If not an index, validate as a string
             try:
-                resolved: E = input_enum(value)
-                return lookup_fn(resolved) if lookup_fn else resolved
+                resolved = input_enum(value)
             except ValueError as e:
                 valid_choices = ", ".join([e.value for e in enum_options])
                 raise click.BadParameter(
@@ -83,11 +90,13 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
                     f"Valid names: {valid_choices}, or indices 0-{len(enum_options) - 1}."
                 ) from e
 
+        return lookup_fn(resolved) if lookup_fn else resolved
+
     def callback(
         _ctx: Context,
         _param: Parameter,
-        value: Union[str | int, Tuple[str | int, ...]],
-    ) -> Union["T | E", Tuple["T | E", ...]]:
+        value: Union[str | int, Tuple[str | int, ...], None],
+    ) -> Union[E, T, Tuple[Union[E, T], ...], None]:
         """
         Callback to decorate the input and create the function.
         :param _ctx: Unused.
@@ -97,20 +106,27 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
         """
 
         if multiple:
-            values = cast(Tuple[str | int, ...], value)
+            values = cast(Tuple[str | int, ...], value or ())
             return tuple(convert_single_value(v) for v in values)
-        else:
-            single_value = cast(str | int, value)
-            return convert_single_value(single_value)
+
+        if value is None:
+            return None
+
+        return convert_single_value(cast(str | int, value))
+
+    if default is None:
+        click_default: ClickDefault = None if not multiple else ()
+    else:
+        click_default = (default.value,) if multiple else default.value
 
     return click.option(
         arg_flag,
         type=click.STRING,
         callback=callback,
         help=help_string,
-        default=default.value,  # Ensure we use the string value for the default
+        default=click_default,
         envvar=envvar,
         multiple=multiple,
-        show_default=True,
+        show_default=default is not None,
         show_envvar=True,
     )
