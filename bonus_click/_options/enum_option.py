@@ -15,7 +15,7 @@ T = TypeVar("T")
 ClickDefault = Optional[Union[str, int, Tuple[Union[str, int], ...]]]
 
 
-def create_enum_option(  # pylint: disable=too-many-positional-arguments
+def create_enum_option(  # type: ignore[explicit-any] # pylint: disable=too-many-positional-arguments
     arg_flag: str,
     help_message: str,
     input_enum: type[E],
@@ -23,6 +23,7 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
     multiple: bool = False,
     envvar: Optional[str] = None,
     lookup_fn: Optional[Callable[[E], T]] = None,
+    option_factory: Callable[..., Callable[[FC], FC]] = click.option,
 ) -> Callable[[FC], FC]:
     """
     Creates a Click option for an Enum type. Inputs may be given as either the
@@ -47,6 +48,8 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
     :param envvar: Passed to the click option.
     :param lookup_fn: If given, the resolved value will be passed to this function, then the click
     command will get whatever is returned as an argument.
+    :param option_factory: Allows passing in of other option-like factories, like from click option
+    group.
     :return: A Click option configured for the specified Enum.
     """
 
@@ -119,7 +122,7 @@ def create_enum_option(  # pylint: disable=too-many-positional-arguments
     else:
         click_default = (default.value,) if multiple else default.value
 
-    return click.option(
+    return option_factory(
         arg_flag,
         type=click.STRING,
         callback=callback,

@@ -7,6 +7,12 @@
 
 ## Versions
 
+### 0.4.0 - (2026-06-13)
+
+* The function `create_enum_option` now accepts an `option_factory` arg to support passing in other
+option sources, like those from `click_option_group`.
+
+
 ### 0.3.0 - (2026-01-14)
 
 * Adds optional `None` defaults in `create_enum_option` and the corresponding similar logic for the
