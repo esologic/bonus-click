@@ -3,9 +3,13 @@
 ## Roadmap
 
 * Easy log config decorator.
-* Click types for `HH:MM:SS` timedelta strings.
 
 ## Versions
+
+### 0.5.0 - (2026-10-13)
+
+* Adds a new param type for custom timedelta (`HH:MM:SS`) strings. Accepts a few input formats.
+
 
 ### 0.4.0 - (2026-06-13)
 
