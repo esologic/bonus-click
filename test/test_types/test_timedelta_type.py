@@ -3,8 +3,9 @@ Unit tests for `TimedeltaParamType` in `bonus_click.types`.
 
 These tests cover the accepted input formats (ISO 8601 durations and
 clock-style strings), error conditions (malformed or unsupported durations),
-and round-tripping through generated ISO strings. Parsing tests are anchored on a single value,
-12h 15m 30.5s, so that the equivalence of the various spellings is obvious.
+and round-tripping through generated ISO strings. Parsing tests are anchored on
+three values, 12h 15m 30.5s, 36h 15m 30.5s (over a day), and 250ms (under a
+second), so that the equivalence of the various spellings is obvious.
 """
 
 from datetime import timedelta
@@ -16,6 +17,8 @@ from click.testing import CliRunner
 from bonus_click.bonus_types import Timedelta
 
 EXAMPLE = timedelta(hours=12, minutes=15, seconds=30, milliseconds=500)
+OVER_A_DAY = timedelta(days=1) + EXAMPLE
+SUB_SECOND = timedelta(milliseconds=250)
 
 
 def to_iso(td: timedelta) -> str:
@@ -40,7 +43,7 @@ def to_iso(td: timedelta) -> str:
     if minutes:
         time_part += f"{minutes}M"
     if secs or not (td.days or hours or minutes):
-        time_part += f"{secs:g}S"
+        time_part += f"{secs:.6f}".rstrip("0").rstrip(".") + "S"
     return out + ("T" + time_part if time_part else "")
 
 
@@ -71,9 +74,19 @@ def make_cli() -> click.Command:
         # Clock-style spellings of the example value
         ("12:15:30.5", EXAMPLE),
         ("12:15:30.500000", EXAMPLE),
+        # Spellings of the over-a-day value
+        ("P1DT12H15M30.5S", OVER_A_DAY),
+        ("PT36H15M30.5S", OVER_A_DAY),
+        ("PT130530.5S", OVER_A_DAY),
+        ("1 day, 12:15:30.5", OVER_A_DAY),
+        ("36:15:30.5", OVER_A_DAY),
+        # Spellings of the sub-second value
+        ("PT0.25S", SUB_SECOND),
+        ("PT0M0.25S", SUB_SECOND),
+        ("00:00:00.25", SUB_SECOND),
+        ("00:00:00.250000", SUB_SECOND),
+        ("0:00:00.250000", SUB_SECOND),
         # Other units and sign handling
-        ("P1DT12H15M30.5S", timedelta(days=1) + EXAMPLE),
-        ("1 day, 12:15:30.5", timedelta(days=1) + EXAMPLE),
         ("3 days, 00:00:00", timedelta(days=3)),
         ("P1W", timedelta(weeks=1)),
         ("P2D", timedelta(days=2)),
@@ -115,6 +128,7 @@ def test_timedelta_parse(duration_value: str, expected_output: timedelta) -> Non
         "1:2:3.5x",  # trailing garbage
         "12h15m",  # not ISO, not clock
         "44130.5",  # bare number
+        "PT.25S",  # ISO requires a digit before the decimal separator
     ],
 )
 def test_timedelta_invalid_value(invalid_input: str) -> None:
@@ -190,7 +204,17 @@ def test_timedelta_metavar_in_help() -> None:
 
 @pytest.mark.parametrize(
     "value",
-    [EXAMPLE, -EXAMPLE, timedelta(0), timedelta(days=10, seconds=1), timedelta(milliseconds=1)],
+    [
+        EXAMPLE,
+        -EXAMPLE,
+        OVER_A_DAY,
+        -OVER_A_DAY,
+        SUB_SECOND,
+        -SUB_SECOND,
+        timedelta(0),
+        timedelta(days=10, seconds=1),
+        timedelta(microseconds=1),
+    ],
 )
 def test_to_iso_round_trips_through_param_type(value: timedelta) -> None:
     """
