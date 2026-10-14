@@ -3,7 +3,7 @@ Uses enums to define different choices the user can make in your CLI.
 """
 
 from enum import Enum
-from typing import Callable, Optional, Tuple, TypeVar, Union, cast
+from typing import Any, Callable, Optional, Protocol, Tuple, TypeVar, Union, cast
 
 import click
 from click import Context, Parameter
@@ -15,7 +15,22 @@ T = TypeVar("T")
 ClickDefault = Optional[Union[str, int, Tuple[Union[str, int], ...]]]
 
 
-def create_enum_option(  # type: ignore[explicit-any] # pylint: disable=too-many-positional-arguments
+class OptionFactory(Protocol):
+    """
+    Anything shaped like `click.option`: called with the param decls and keyword attrs,
+    returns a signature-preserving decorator.
+
+    Keeping `FC` scoped to `__call__` (rather than to `create_enum_option`'s own
+    signature) is what lets mypy treat the returned decorator as generic instead of
+    collapsing `FC` to `Never`.
+    """
+
+    def __call__(  # type: ignore[explicit-any]
+        self, *param_decls: str, **attrs: Any
+    ) -> Callable[[FC], FC]: ...
+
+
+def create_enum_option(  # pylint: disable=too-many-positional-arguments
     arg_flag: str,
     help_message: str,
     input_enum: type[E],
@@ -23,7 +38,7 @@ def create_enum_option(  # type: ignore[explicit-any] # pylint: disable=too-many
     multiple: bool = False,
     envvar: Optional[str] = None,
     lookup_fn: Optional[Callable[[E], T]] = None,
-    option_factory: Callable[..., Callable[[FC], FC]] = click.option,
+    option_factory: OptionFactory = click.option,
 ) -> Callable[[FC], FC]:
     """
     Creates a Click option for an Enum type. Inputs may be given as either the

@@ -49,7 +49,7 @@ def test_enum_option_accepts_name_and_index(input_value: str, expected_output: s
     runner = CliRunner()
 
     @click.command()
-    @create_enum_option("--output-format", "Output format", OutputFormat)  # type: ignore[arg-type]
+    @create_enum_option("--output-format", "Output format", OutputFormat)
     def cli(output_format: OutputFormat) -> None:
         click.echo(output_format.value)
 
@@ -78,7 +78,7 @@ def test_enum_option_invalid_value(invalid_input: str, expected_match: str) -> N
     runner = CliRunner()
 
     @click.command()
-    @create_enum_option("--output-format", "Output format", OutputFormat)  # type: ignore[arg-type]
+    @create_enum_option("--output-format", "Output format", OutputFormat)
     def cli(output_format: OutputFormat) -> None:
         click.echo(output_format.value)
 
@@ -98,9 +98,7 @@ def test_enum_option_multiple() -> None:
     runner = CliRunner()
 
     @click.command()
-    @create_enum_option(  # type: ignore[arg-type]
-        "--output-format", "Output format", OutputFormat, multiple=True
-    )
+    @create_enum_option("--output-format", "Output format", OutputFormat, multiple=True)
     def cli(output_format: Tuple[OutputFormat, ...]) -> None:
         click.echo(",".join(f.value for f in output_format))
 
@@ -147,7 +145,7 @@ def make_cli_with_optgroup() -> click.Command:
 
     @optgroup.group("Output Options")
     @click.command()
-    @create_enum_option(  # type: ignore[arg-type]
+    @create_enum_option(
         "--output-format",
         "Output format",
         OutputFormat,
@@ -169,7 +167,7 @@ def make_cli_without_optgroup() -> click.Command:
 
     @optgroup.group("Output Options")
     @click.command()
-    @create_enum_option(  # type: ignore[arg-type]
+    @create_enum_option(
         "--output-format",
         "Output format",
         OutputFormat,

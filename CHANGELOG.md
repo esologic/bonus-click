@@ -6,6 +6,11 @@
 
 ## Versions
 
+### 0.5.1 - (2026-10-14)
+
+* Fixed edge case typing problem with `create_enum_option`.
+
+
 ### 0.5.0 - (2026-10-13)
 
 * Adds a new param type for custom timedelta (`HH:MM:SS`) strings. Accepts a few input formats.
